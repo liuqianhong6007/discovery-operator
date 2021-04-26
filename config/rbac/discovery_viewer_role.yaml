@@ -1,0 +1,20 @@
+# permissions for end users to view discoveries.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: discovery-viewer-role
+rules:
+- apiGroups:
+  - discovery.lqh.xzy
+  resources:
+  - discoveries
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - discovery.lqh.xzy
+  resources:
+  - discoveries/status
+  verbs:
+  - get

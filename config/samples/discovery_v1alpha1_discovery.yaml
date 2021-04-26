@@ -1,0 +1,7 @@
+apiVersion: discovery.lqh.xzy/v1alpha1
+kind: Discovery
+metadata:
+  name: discovery-sample
+spec:
+  # Add fields here
+  foo: bar
