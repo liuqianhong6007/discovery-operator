@@ -18,6 +18,8 @@ package controllers
 
 import (
 	"context"
+	appsv1 "k8s.io/api/apps/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -51,6 +53,30 @@ func (r *DiscoveryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	_ = r.Log.WithValues("discovery", req.NamespacedName)
 
 	// your logic here
+	instance := discoveryv1alpha1.Discovery{}
+	if err := r.Get(context.TODO(), req.NamespacedName, &instance); err != nil {
+		if errors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
+
+	if instance.DeletionTimestamp != nil {
+		return ctrl.Result{}, nil
+	}
+
+	deploy := appsv1.Deployment{}
+	if err := r.Get(context.TODO(), req.NamespacedName, &deploy); err != nil && errors.IsNotFound(err) {
+		// create deploy
+		newDeploy := appsv1.Deployment{
+			TypeMeta:   instance.TypeMeta,
+			ObjectMeta: instance.ObjectMeta,
+			Spec:       instance.Spec.DeploymentSpec,
+		}
+		if err = r.Client.Create(context.TODO(), &newDeploy); err != nil {
+			return ctrl.Result{}, err
+		}
+	}
 
 	return ctrl.Result{}, nil
 }

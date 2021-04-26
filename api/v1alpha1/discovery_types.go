@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,14 +29,20 @@ type DiscoverySpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of Discovery. Edit discovery_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	appsv1.DeploymentSpec `json:",inline"`
+
+	// AutoRegister indicates whether to auto register after startup
+	AutoRegister bool `json:"autoRegister,omitempty"`
+
+	// RegisterName determines the register name
+	RegisterName string `json:"autoRegisterName,omitempty"`
 }
 
 // DiscoveryStatus defines the observed state of Discovery
 type DiscoveryStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	appsv1.DeploymentStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
